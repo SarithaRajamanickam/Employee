@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+<body onload="loadDoc()">
+    Employee name:<br>
+    <input name="empname" type="text" id="empname">
+    <br>Designation :<br>
+    <input name="designation" type="text" id="designation">
+    <br> Email: <br>
+    <input name="email" type="text" id="email">
+    <br> Phone number:<br>
+    <input name="phone" type="text" id="phone">
+    <br>Address:
+    <br>
+    <textarea name="address" id="address"></textarea><br><br>
+    <button type="button" onclick="validation()">Register</button>
+    <button type="button" id="buttonType" onclick="addAndUpdate()">Save</button>
+    <p id="demo"></p>
+
+    <script>
+        function loadDoc() {
+            fetch('http://localhost:8080/employees', { method: 'GET' })
+                .then(function (response) {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                })
+                .then(function (text) {
+                    var txt = "<table border='1'>"
+                    txt += "<th>Employee Name</th><th>Designation</th><th>Email</th><th>Phone</th><th>Address</th><th width='25%'>Action</th>";
+                    for (var i = 0; i < text.length; i++) {
+                        var deleteid = text[i].id;
+                        txt += "<tr><td>" + text[i].empname + "</td>";
+                        txt += "<td>" + text[i].designation + "</td>";
+                        txt += "<td>" + text[i].email + "</td>";
+                        txt += "<td>" + text[i].phone + "</td>";
+                        txt += "<td>" + text[i].address + "</td>";
+                        txt += '<td><button onclick="edit(' + i + ')">Edit</button>&nbsp;&nbsp;';
+                        txt += '<button onclick="delete1(' + deleteid + ')">Delete</button></td></tr>';
+                    }
+                    txt += "</table>"
+                    document.getElementById("demo").innerHTML = txt;
+                })
+        }
+        function addAndUpdate() {
+            ((document.getElementById('buttonType').innerHTML == "Save") ? this.add() : this.update());
+        }
+        function add() {
+
+            fetch("http://localhost:8080/employees", {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "empname": document.getElementById("empname").value,
+                    "designation": document.getElementById("designation").value,
+                    "email": document.getElementById("email").value,
+                    "phone": document.getElementById("phone").value,
+                    "address": document.getElementById("address").value
+                })
+            })
+                .then((response) => {
+                    loadDoc();
+                    document.getElementById('empname').value = '';
+                    document.getElementById('designation').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('phone').value = '';
+                    document.getElementById('address').value = '';
+                });
+        }
+        function delete1(deleteid) {
+
+            fetch("http://localhost:8080/employees/" + deleteid, {
+
+                method: "DELETE",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+            })
+
+                .then((response) => {
+
+                    loadDoc();
+
+                });
+
+        }
+        function edit(i) {
+            document.getElementById('buttonType').innerHTML = "update";
+            fetch('http://localhost:8080/employees', { method: 'GET' })
+                .then(function (response) {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                })
+                .then(function (text) {
+                    document.getElementById('empname').value = text[i].empname;
+                    document.getElementById('designation').value = text[i].designation;
+                    document.getElementById('email').value = text[i].email;
+                    document.getElementById('phone').value = text[i].phone;
+                    document.getElementById('address').value = text[i].address;
+                    updateid = i+1;
+                })
+        }
+        function update() {
+            alert("update"+updateid);
+            fetch("http://localhost:8080/employees/" + updateid, {
+                method: "POST",
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "empname": document.getElementById("empname").value,
+                    "designation": document.getElementById("designation").value,
+                    "email": document.getElementById("email").value,
+                    "phone": document.getElementById("phone").value,
+                    "address": document.getElementById("address").value
+                })
+            })
+                .then((response) => {
+                    document.getElementById('empname').value = '';
+                    document.getElementById('designation').value = '';
+                    document.getElementById('email').value = '';
+                    document.getElementById('phone').value = '';
+                    document.getElementById('address').value = '';
+                    document.getElementById('buttonType').innerHTML = "Save";
+                    loadDoc();
+                });
+        }
+
+
+        function validation() {
+            var empname1 = document.getElementById('empname').value;
+            var email1 = document.getElementById('email').value;
+            var mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+            if (empname1 == null || empname1 == "") {
+                alert("Name can't be blank");
+                return false;
+
+            } else if (email1.match(mailformat)) {
+                return true;
+            }
+            else {
+                alert("You have entered an invalid email address!");
+                return false;
+
+            }
+        }
+    </script>
+</body>
+
+</html>

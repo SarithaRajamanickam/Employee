@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+    <h2>Employee Details</h2>
+
+    <form action:"get" >
+        First name:<br>
+        <input name="empname" type="text" id="empname">
+        <br> Last name:<br>
+        <input name="designation" type="text" id="designation">
+        <br> Email:
+        <br>
+        <input name="email" type="text" id="email"><br>
+         Phone number:<br>
+        <input name="phone" type="text" id="phone"><br>
+         Address:
+        <br>
+        <input name="address" type="text" id="address"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body></html>
+
